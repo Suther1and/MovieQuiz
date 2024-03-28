@@ -2,8 +2,104 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController {
     
+    
+    //MARK: - Структуры
+    
+    struct QuizQuestion {
+      // строка с названием фильма,
+      // совпадает с названием картинки афиши фильма в Assets
+      let image: String
+      // строка с вопросом о рейтинге фильма
+      let text: String
+      // булевое значение (true, false), правильный ответ на вопрос
+      let correctAnswer: Bool
+    }
+    
+    // вью модель для состояния "Вопрос показан"
+    struct QuizStepViewModel {
+      // картинка с афишей фильма с типом UIImage
+      let image: UIImage
+      // вопрос о рейтинге квиза
+      let question: String
+      // строка с порядковым номером этого вопроса (ex. "1/10")
+      let questionNumber: String
+    }
+    
+    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+        let questionStep = QuizStepViewModel(
+            image: UIImage(named: model.image) ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
+        return questionStep
+    }
+    
+    private func show(quiz step: QuizStepViewModel) {
+        imageView.image = step.image
+        questionText.text = step.question
+        indexLabel.text = step.questionNumber
+    }
+    
+    private func showAnswerResult(isCorrect: Bool) {
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    
+    
+    lazy var currentQuestion = questions[currentQuestionIndex]
+    lazy var currentQuestionIndex = 0
+    lazy var correctAnswers = 0
 
     
+    
+    
+    // массив вопросов
+    private let questions: [QuizQuestion] = [
+            QuizQuestion(
+                image: "The Godfather",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: true),
+            QuizQuestion(
+                image: "The Dark Knight",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: true),
+            QuizQuestion(
+                image: "Kill Bill",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: true),
+            QuizQuestion(
+                image: "The Avengers",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: true),
+            QuizQuestion(
+                image: "Deadpool",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: true),
+            QuizQuestion(
+                image: "The Green Knight",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: true),
+            QuizQuestion(
+                image: "Old",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: false),
+            QuizQuestion(
+                image: "The Ice Age Adventures of Buck Wild",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: false),
+            QuizQuestion(
+                image: "Tesla",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: false),
+            QuizQuestion(
+                image: "Vivarium",
+                text: "Рейтинг этого фильма больше чем 6?",
+                correctAnswer: false)
+        ]
+    
+    
+    
+    //MARK: - Объекты интерфейса
     lazy var imageView = {
         let image = UIImageView()
         image.backgroundColor = .ypWhite
@@ -28,9 +124,9 @@ final class MovieQuizViewController: UIViewController {
         }()
     }
     
-    func createButton(title: String) -> UIButton{
+    func createButton(title: String, action: UIAction) -> UIButton{
         {
-            let button = UIButton()
+            let button = UIButton(primaryAction: action)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.setTitle(title, for: .normal)
             button.setTitleColor(.ypBlack, for: .normal)
@@ -41,17 +137,34 @@ final class MovieQuizViewController: UIViewController {
         }()
     }
     
-    lazy var yesButton = createButton(title: "Да")
-    lazy var noButton = createButton(title: "Нет")
+    lazy var noAction = UIAction { _ in
+        let currentQuestion = self.questions[self.currentQuestionIndex]
+        let givenAnswer = true
+        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+         
+    }
+    
+    lazy var yesAction = UIAction { _ in
+        let currentQuestion = self.questions[self.currentQuestionIndex]
+        let givenAnswer = false
+        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+         
+    }
+    
+    lazy var yesButton = createButton(title: "Да", action: yesAction)
+    lazy var noButton = createButton(title: "Нет", action: noAction)
     lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23)
     lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20)
     lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20)
+    
+     
+
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
-
+        
       
         
         view.addSubview(questionTitleLabel)
