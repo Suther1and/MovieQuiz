@@ -152,6 +152,7 @@ final class MovieQuizViewController: UIViewController {
             
             let firstQuestion = self.questions[self.currentQuestionIndex]
             let viewModel = self.convert(model: firstQuestion)
+            self.imageView.layer.borderColor = .none
             self.show(quiz: viewModel)
         }
         
@@ -264,11 +265,12 @@ final class MovieQuizViewController: UIViewController {
             imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant: -20),
             imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             imageView.topAnchor.constraint(equalTo: questionTitleLabel.bottomAnchor, constant: 20),
-            imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -212),
+            imageView.heightAnchor.constraint(equalToConstant: view.frame.height/2 + 80),
             
             questionText.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 62),
             questionText.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -62),
             questionText.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20),
+            questionText.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -40)
             
         ])
     }
