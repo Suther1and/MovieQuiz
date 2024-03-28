@@ -2,25 +2,7 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController {
     
-    lazy var questionTitleLabel = {
-        let label = UILabel()
-        label.text = "Вопрос:"
-        label.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        label.textColor = .ypWhite
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        return label
-    }()
-    
-    lazy var indexLabel = {
-        let label = UILabel()
-        label.text = "1/10"
-        label.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        label.textColor = .ypWhite
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        return label
-    }()
+
     
     lazy var imageView = {
         let image = UIImageView()
@@ -31,47 +13,46 @@ final class MovieQuizViewController: UIViewController {
         return image
     }()
     
-    lazy var questionText = {
-        let text = UILabel()
-        text.text = "Рейтинг этого фильма больше чем 5?"
-        text.numberOfLines = 0
-        text.translatesAutoresizingMaskIntoConstraints = false
-        text.font = UIFont(name: "YSDisplay-Bold", size: 23)
-        text.textColor = .ypWhite
-        text.textAlignment = .center
-        return text
-    }()
     
-    lazy var noButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Нет", for: .normal)
-        button.setTitleColor(.ypBlack, for: .normal)
-        button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        button.layer.cornerRadius = 15
-        button.backgroundColor = .ypWhite
-        
-        return button
-    }()
+    func createLabel(text: String, font: String, size: Int) -> UILabel {
+        {
+            let label = UILabel()
+            label.text = text
+            label.numberOfLines = 0
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.font = UIFont(name: font, size: CGFloat(size))
+            label.textColor = .ypWhite
+            label.textAlignment = .center
+            
+            return label
+        }()
+    }
     
-    lazy var yesButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Да", for: .normal)
-        button.setTitleColor(.ypBlack, for: .normal)
-        button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        button.layer.cornerRadius = 15
-        button.backgroundColor = .ypWhite
-        
-        return button
-    }()
+    func createButton(title: String) -> UIButton{
+        {
+            let button = UIButton()
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.setTitle(title, for: .normal)
+            button.setTitleColor(.ypBlack, for: .normal)
+            button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+            button.layer.cornerRadius = 15
+            button.backgroundColor = .ypWhite
+            return button
+        }()
+    }
+    
+    lazy var yesButton = createButton(title: "Да")
+    lazy var noButton = createButton(title: "Нет")
+    lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23)
+    lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20)
+    lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20)
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
 
-        
+      
         
         view.addSubview(questionTitleLabel)
         view.addSubview(noButton)
