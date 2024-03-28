@@ -166,6 +166,7 @@ final class MovieQuizViewController: UIViewController {
         let image = UIImageView()
         image.backgroundColor = .ypWhite
         image.layer.cornerRadius = 20
+        image.clipsToBounds = true
         image.translatesAutoresizingMaskIntoConstraints = false
         
         return image
