@@ -69,6 +69,16 @@ final class MovieQuizViewController: UIViewController {
         let questionNumber: String
     }
     
+    // для состояния "Результат квиза"
+    struct QuizResultsViewModel {
+      // строка с заголовком алерта
+      let title: String
+      // строка с текстом о количестве набранных очков
+      let text: String
+      // текст для кнопки алерта
+      let buttonText: String
+    }
+    
     lazy var currentQuestion = questions[currentQuestionIndex]
     lazy var currentQuestionIndex = 0
     lazy var correctAnswers = 0
@@ -94,9 +104,14 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questions.count - 1 {
+            let text = "Ваш результат: \(correctAnswers)/10" // 1
+            let viewModel = QuizResultsViewModel( // 2
+                title: "Этот раунд окончен!",
+                text: text,
+                buttonText: "Сыграть ещё раз")
+            show(quiz: viewModel) // 3
         } else {
             currentQuestionIndex += 1
-            
             let nextQuestion = questions[currentQuestionIndex]
             let viewModel = convert(model: nextQuestion)
             
@@ -105,6 +120,10 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showAnswerResult(isCorrect: Bool) {
+        if isCorrect{
+            correctAnswers += 1
+        }
+        
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
@@ -116,26 +135,30 @@ final class MovieQuizViewController: UIViewController {
     
     
     
-//    lazy var alert = UIAlertController(
-//        title: "Этот раунд окончен!",
-//        message: "Ваш результат ???",
-//        preferredStyle: .alert)
-//
-//    lazy var action = UIAlertAction(title: result.buttonText, style: .default) { _ in
-//        self.currentQuestionIndex = 0
-//        // сбрасываем переменную с количеством правильных ответов
-//        self.correctAnswers = 0
-//        
-//        // заново показываем первый вопрос
-//        let firstQuestion = self.questions[self.currentQuestionIndex]
-//        let viewModel = self.convert(model: firstQuestion)
-//        self.present(alert, animated: true, completion: nil)
-//
-//        self.show(quiz: viewModel)
-//    }
+ 
 
  
-   
+    // приватный метод для показа результатов раунда квиза
+    // принимает вью модель QuizResultsViewModel и ничего не возвращает
+    private func show(quiz result: QuizResultsViewModel) {
+        let alert = UIAlertController(
+            title: result.title,
+            message: result.text,
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            
+            let firstQuestion = self.questions[self.currentQuestionIndex]
+            let viewModel = self.convert(model: firstQuestion)
+            self.show(quiz: viewModel)
+        }
+        
+        alert.addAction(action)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
 
      
    
