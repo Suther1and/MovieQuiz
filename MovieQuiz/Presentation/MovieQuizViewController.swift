@@ -3,7 +3,7 @@ import UIKit
 final class MovieQuizViewController: UIViewController {
     
     
-    //MARK: - массив вопросов
+    //MARK: - Questions Array
     private let questions: [QuizQuestion] = [
         QuizQuestion(
             image: "The Godfather",
@@ -47,7 +47,7 @@ final class MovieQuizViewController: UIViewController {
             correctAnswer: false)
     ]
     
-    //MARK: - Структуры
+    //MARK: - Structs
     
     struct QuizQuestion {
         // строка с названием фильма,
@@ -81,7 +81,7 @@ final class MovieQuizViewController: UIViewController {
     
     
     
-    //MARK: - Переменные
+    //MARK: - Varaibles
     
     lazy var currentQuestion = questions[currentQuestionIndex]
     lazy var currentQuestionIndex = 0
@@ -91,7 +91,7 @@ final class MovieQuizViewController: UIViewController {
     
     
     
-    //MARK: - Функции
+    //MARK: - Functions
     
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -161,7 +161,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     
-    //MARK: - Объекты интерфейса
+    //MARK: - UI Objects
     lazy var imageView = {
         let image = UIImageView()
         image.backgroundColor = .ypWhite
@@ -239,7 +239,7 @@ final class MovieQuizViewController: UIViewController {
         
         
         
-    //MARK: Констренты
+    //MARK: Constraints
         NSLayoutConstraint.activate([
             noButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             noButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -274,7 +274,7 @@ final class MovieQuizViewController: UIViewController {
     }
 }
 
-//MARK: -Mock-данные
+//MARK: -Mock Data
 /*
  Картинка: The Godfather
  Настоящий рейтинг: 9,2
