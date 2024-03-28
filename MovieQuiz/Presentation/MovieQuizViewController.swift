@@ -49,7 +49,7 @@ final class MovieQuizViewController: UIViewController {
     
     //MARK: - Structs
     
-    struct QuizQuestion {
+    private struct QuizQuestion {
         // строка с названием фильма,
         // совпадает с названием картинки афиши фильма в Assets
         let image: String
@@ -60,7 +60,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     // вью модель для состояния "Вопрос показан"
-    struct QuizStepViewModel {
+    private struct QuizStepViewModel {
         // картинка с афишей фильма с типом UIImage
         let image: UIImage
         // вопрос о рейтинге квиза
@@ -70,7 +70,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     // для состояния "Результат квиза"
-    struct QuizResultsViewModel {
+    private struct QuizResultsViewModel {
         // строка с заголовком алерта
         let title: String
         // строка с текстом о количестве набранных очков
@@ -83,9 +83,9 @@ final class MovieQuizViewController: UIViewController {
     
     //MARK: - Varaibles
     
-    lazy var currentQuestion = questions[currentQuestionIndex]
-    lazy var currentQuestionIndex = 0
-    lazy var correctAnswers = 0
+    private lazy var currentQuestion = questions[currentQuestionIndex]
+    private lazy var currentQuestionIndex = 0
+    private lazy var correctAnswers = 0
     
     
     
@@ -163,7 +163,7 @@ final class MovieQuizViewController: UIViewController {
     
     
     //MARK: - UI Objects
-    lazy var imageView = {
+    private lazy var imageView = {
         let image = UIImageView()
         image.backgroundColor = .ypWhite
         image.layer.cornerRadius = 20
@@ -174,7 +174,7 @@ final class MovieQuizViewController: UIViewController {
     }()
     
     
-    func createLabel(text: String, font: String, size: Int) -> UILabel {
+    private func createLabel(text: String, font: String, size: Int) -> UILabel {
         {
             let label = UILabel()
             label.text = text
@@ -188,7 +188,7 @@ final class MovieQuizViewController: UIViewController {
         }()
     }
     
-    func createButton(title: String, action: UIAction) -> UIButton{
+    private func createButton(title: String, action: UIAction) -> UIButton{
         {
             let button = UIButton(primaryAction: action)
             button.translatesAutoresizingMaskIntoConstraints = false
@@ -201,25 +201,25 @@ final class MovieQuizViewController: UIViewController {
         }()
     }
     
-    lazy var noAction = UIAction { _ in
+    private lazy var noAction = UIAction { _ in
         let currentQuestion = self.questions[self.currentQuestionIndex]
         let givenAnswer = false
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
     }
     
-    lazy var yesAction = UIAction { _ in
+    private lazy var yesAction = UIAction { _ in
         let currentQuestion = self.questions[self.currentQuestionIndex]
         let givenAnswer = true
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
     }
     
-    lazy var yesButton = createButton(title: "Да", action: yesAction)
-    lazy var noButton = createButton(title: "Нет", action: noAction)
-    lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23)
-    lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20)
-    lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20)
+    private lazy var yesButton = createButton(title: "Да", action: yesAction)
+    private lazy var noButton = createButton(title: "Нет", action: noAction)
+    private lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23)
+    private lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20)
+    private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20)
     
     
     
