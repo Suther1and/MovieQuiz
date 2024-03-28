@@ -7,19 +7,19 @@ final class MovieQuizViewController: UIViewController {
     private let questions: [QuizQuestion] = [
         QuizQuestion(
             image: "The Godfather",
-            text: "Рейтинг этого фильма больше чем 6?",
+            text: "Рейтинг этого фильма больше чем 9?",
             correctAnswer: true),
         QuizQuestion(
             image: "The Dark Knight",
-            text: "Рейтинг этого фильма больше чем 6?",
+            text: "Рейтинг этого фильма больше чем 8?",
             correctAnswer: true),
         QuizQuestion(
             image: "Kill Bill",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
+            text: "Рейтинг этого фильма больше чем 9?",
+            correctAnswer: false),
         QuizQuestion(
             image: "The Avengers",
-            text: "Рейтинг этого фильма больше чем 6?",
+            text: "Рейтинг этого фильма больше чем 7?",
             correctAnswer: true),
         QuizQuestion(
             image: "Deadpool",
@@ -27,24 +27,24 @@ final class MovieQuizViewController: UIViewController {
             correctAnswer: true),
         QuizQuestion(
             image: "The Green Knight",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
-        QuizQuestion(
-            image: "Old",
-            text: "Рейтинг этого фильма больше чем 6?",
+            text: "Рейтинг этого фильма больше чем 8?",
             correctAnswer: false),
         QuizQuestion(
+            image: "Old",
+            text: "Рейтинг этого фильма больше чем 5?",
+            correctAnswer: true),
+        QuizQuestion(
             image: "The Ice Age Adventures of Buck Wild",
-            text: "Рейтинг этого фильма больше чем 6?",
+            text: "Рейтинг этого фильма больше чем 5?",
             correctAnswer: false),
         QuizQuestion(
             image: "Tesla",
-            text: "Рейтинг этого фильма больше чем 6?",
+            text: "Рейтинг этого фильма больше чем 9?",
             correctAnswer: false),
         QuizQuestion(
             image: "Vivarium",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: false)
+            text: "Рейтинг этого фильма больше чем 3?",
+            correctAnswer: true)
     ]
     
     //MARK: - Structs
