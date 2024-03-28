@@ -1,9 +1,116 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController {
+    
+    lazy var questionTitleLabel = {
+        let label = UILabel()
+        label.text = "Вопрос:"
+        label.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        label.textColor = .ypWhite
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var indexLabel = {
+        let label = UILabel()
+        label.text = "1/10"
+        label.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        label.textColor = .ypWhite
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var imageView = {
+        let image = UIImageView()
+        image.backgroundColor = .ypWhite
+        image.layer.cornerRadius = 20
+        image.translatesAutoresizingMaskIntoConstraints = false
+        
+        return image
+    }()
+    
+    lazy var questionText = {
+        let text = UILabel()
+        text.text = "Рейтинг этого фильма больше чем 5?"
+        text.numberOfLines = 0
+        text.translatesAutoresizingMaskIntoConstraints = false
+        text.font = UIFont(name: "YSDisplay-Bold", size: 23)
+        text.textColor = .ypWhite
+        text.textAlignment = .center
+        return text
+    }()
+    
+    lazy var noButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Нет", for: .normal)
+        button.setTitleColor(.ypBlack, for: .normal)
+        button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        button.layer.cornerRadius = 15
+        button.backgroundColor = .ypWhite
+        
+        return button
+    }()
+    
+    lazy var yesButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Да", for: .normal)
+        button.setTitleColor(.ypBlack, for: .normal)
+        button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        button.layer.cornerRadius = 15
+        button.backgroundColor = .ypWhite
+        
+        return button
+    }()
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .ypBlack
+
+        
+        
+        view.addSubview(questionTitleLabel)
+        view.addSubview(noButton)
+        view.addSubview(yesButton)
+        view.addSubview(indexLabel)
+        view.addSubview(imageView)
+        view.addSubview(questionText)
+        
+        NSLayoutConstraint.activate([
+            noButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            noButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            noButton.widthAnchor.constraint(equalToConstant: (view.frame.width/2) - 30),
+            noButton.heightAnchor.constraint(equalToConstant: 60),
+            
+            yesButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            yesButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            yesButton.widthAnchor.constraint(equalToConstant: (view.frame.width/2) - 30),
+            yesButton.heightAnchor.constraint(equalToConstant: 60),
+
+            questionTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            questionTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            questionTitleLabel.widthAnchor.constraint(equalToConstant: 74),
+            questionTitleLabel.heightAnchor.constraint(equalToConstant: 24),
+            
+            indexLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            indexLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            indexLabel.widthAnchor.constraint(equalToConstant: 37),
+            indexLabel.heightAnchor.constraint(equalToConstant: 24),
+            
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant: -20),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            imageView.topAnchor.constraint(equalTo: questionTitleLabel.bottomAnchor, constant: 20),
+            imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -212),
+            
+            questionText.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 62),
+            questionText.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -62),
+            questionText.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20),
+            
+        ])
     }
 }
 
