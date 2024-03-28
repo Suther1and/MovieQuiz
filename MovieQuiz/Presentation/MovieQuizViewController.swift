@@ -71,21 +71,27 @@ final class MovieQuizViewController: UIViewController {
     
     // для состояния "Результат квиза"
     struct QuizResultsViewModel {
-      // строка с заголовком алерта
-      let title: String
-      // строка с текстом о количестве набранных очков
-      let text: String
-      // текст для кнопки алерта
-      let buttonText: String
+        // строка с заголовком алерта
+        let title: String
+        // строка с текстом о количестве набранных очков
+        let text: String
+        // текст для кнопки алерта
+        let buttonText: String
     }
+    
+    
+    
+    //MARK: - Переменные
     
     lazy var currentQuestion = questions[currentQuestionIndex]
     lazy var currentQuestionIndex = 0
     lazy var correctAnswers = 0
     
-   
-
     
+    
+    
+    
+    //MARK: - Функции
     
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -104,12 +110,12 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questions.count - 1 {
-            let text = "Ваш результат: \(correctAnswers)/10" // 1
-            let viewModel = QuizResultsViewModel( // 2
+            let text = "Ваш результат: \(correctAnswers)/10"
+            let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
                 text: text,
                 buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel) // 3
+            show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
             let nextQuestion = questions[currentQuestionIndex]
@@ -129,17 +135,11 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.showNextQuestionOrResults()
-            }
+            self.showNextQuestionOrResults()
+        }
     }
     
-    
-    
- 
-
- 
-    // приватный метод для показа результатов раунда квиза
-    // принимает вью модель QuizResultsViewModel и ничего не возвращает
+   
     private func show(quiz result: QuizResultsViewModel) {
         let alert = UIAlertController(
             title: result.title,
@@ -159,15 +159,6 @@ final class MovieQuizViewController: UIViewController {
         
         self.present(alert, animated: true, completion: nil)
     }
-
-     
-   
-    
-    
-    
-    
-    
-    
     
     
     //MARK: - Объекты интерфейса
@@ -238,9 +229,6 @@ final class MovieQuizViewController: UIViewController {
         
         show(quiz: convert(model: currentQuestion))
         
-        
-        
-//        alert.addAction(action)
         view.addSubview(questionTitleLabel)
         view.addSubview(noButton)
         view.addSubview(yesButton)
@@ -248,6 +236,9 @@ final class MovieQuizViewController: UIViewController {
         view.addSubview(imageView)
         view.addSubview(questionText)
         
+        
+        
+    //MARK: Констренты
         NSLayoutConstraint.activate([
             noButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             noButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -282,11 +273,8 @@ final class MovieQuizViewController: UIViewController {
     }
 }
 
-
+//MARK: -Mock-данные
 /*
- Mock-данные
- 
- 
  Картинка: The Godfather
  Настоящий рейтинг: 9,2
  Вопрос: Рейтинг этого фильма больше чем 6?
@@ -345,4 +333,4 @@ final class MovieQuizViewController: UIViewController {
  Настоящий рейтинг: 5,8
  Вопрос: Рейтинг этого фильма больше чем 6?
  Ответ: НЕТ
-*/
+ */
