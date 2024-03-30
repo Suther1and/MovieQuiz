@@ -61,7 +61,7 @@ final class MovieQuizViewController: UIViewController {
             text: "Рейтинг этого фильма больше чем 3?",
             correctAnswer: true)
     ]
-
+    
     private struct QuizQuestion {
         // строка с названием фильма,
         // совпадает с названием картинки афиши фильма в Assets
@@ -107,7 +107,7 @@ final class MovieQuizViewController: UIViewController {
             view.addSubview($0)
         }
         
-                NSLayoutConstraint.activate([
+        NSLayoutConstraint.activate([
             noButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             noButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             noButton.widthAnchor.constraint(equalToConstant: (view.frame.width/2) - 30),
@@ -147,15 +147,19 @@ final class MovieQuizViewController: UIViewController {
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
     }
-
+    
     private lazy var yesAction = UIAction { _ in
         let currentQuestion = self.questions[self.currentQuestionIndex]
         let givenAnswer = true
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
     }
-
+    
     //MARK: Private Methods
+    private func changeStateButtons(isEnabled: Bool) {
+        yesButton.isEnabled = isEnabled
+        noButton.isEnabled = isEnabled
+    }
     private func createLabel(text: String, font: String, size: Int) -> UILabel {
         {
             let label = UILabel()
@@ -167,7 +171,7 @@ final class MovieQuizViewController: UIViewController {
             return label
         }()
     }
-
+    
     private func createButton(title: String, action: UIAction) -> UIButton{
         {
             let button = UIButton(primaryAction: action)
@@ -205,9 +209,8 @@ final class MovieQuizViewController: UIViewController {
             currentQuestionIndex += 1
             let nextQuestion = questions[currentQuestionIndex]
             let viewModel = convert(model: nextQuestion)
-            imageView.layer.borderColor = .none
-            noButton.isEnabled = true
-            yesButton.isEnabled = true
+            imageView.layer.borderColor = UIColor.clear.cgColor
+            changeStateButtons(isEnabled: true)
             show(quiz: viewModel)
         }
     }
@@ -220,8 +223,7 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        self.yesButton.isEnabled = false
-        self.noButton.isEnabled = false
+        changeStateButtons(isEnabled: false)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.showNextQuestionOrResults()
         }
@@ -239,18 +241,16 @@ final class MovieQuizViewController: UIViewController {
             
             let firstQuestion = self.questions[self.currentQuestionIndex]
             let viewModel = self.convert(model: firstQuestion)
-            self.imageView.layer.borderColor = .none
+            self.imageView.layer.borderColor = UIColor.clear.cgColor
             self.show(quiz: viewModel)
-            self.noButton.isEnabled = true
-            self.yesButton.isEnabled = true
+            self.changeStateButtons(isEnabled: true)
         }
         alert.addAction(action)
         self.present(alert, animated: true, completion: nil)
     }
-
 }
 
- 
+
 //MARK: -Mock Data
 /*
  Картинка: The Godfather
