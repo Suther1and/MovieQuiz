@@ -3,7 +3,22 @@ import UIKit
 final class MovieQuizViewController: UIViewController {
     
     
-    //MARK: - Questions Array
+    //MARK: - Private Properties
+    private lazy var currentQuestion = questions[currentQuestionIndex]
+    private lazy var currentQuestionIndex = 0
+    private lazy var correctAnswers = 0
+    private lazy var imageView = {
+        let image = UIImageView()
+        image.backgroundColor = .ypWhite
+        image.layer.cornerRadius = 20
+        image.clipsToBounds = true
+        return image
+    }()
+    private lazy var yesButton = createButton(title: "Да", action: yesAction)
+    private lazy var noButton = createButton(title: "Нет", action: noAction)
+    private lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23)
+    private lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20)
+    private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20)
     private let questions: [QuizQuestion] = [
         QuizQuestion(
             image: "The Godfather",
@@ -46,9 +61,7 @@ final class MovieQuizViewController: UIViewController {
             text: "Рейтинг этого фильма больше чем 3?",
             correctAnswer: true)
     ]
-    
-    //MARK: - Structs
-    
+
     private struct QuizQuestion {
         // строка с названием фильма,
         // совпадает с названием картинки афиши фильма в Assets
@@ -58,7 +71,6 @@ final class MovieQuizViewController: UIViewController {
         // булевое значение (true, false), правильный ответ на вопрос
         let correctAnswer: Bool
     }
-    
     // вью модель для состояния "Вопрос показан"
     private struct QuizStepViewModel {
         // картинка с афишей фильма с типом UIImage
@@ -68,7 +80,6 @@ final class MovieQuizViewController: UIViewController {
         // строка с порядковым номером этого вопроса (ex. "1/10")
         let questionNumber: String
     }
-    
     // для состояния "Результат квиза"
     private struct QuizResultsViewModel {
         // строка с заголовком алерта
@@ -79,151 +90,6 @@ final class MovieQuizViewController: UIViewController {
         let buttonText: String
     }
     
-    
-    
-    //MARK: - Varaibles
-    
-    private lazy var currentQuestion = questions[currentQuestionIndex]
-    private lazy var currentQuestionIndex = 0
-    private lazy var correctAnswers = 0
-    
-    
-    
-    
-    
-    //MARK: - Functions
-    
-    
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
-        return questionStep
-    }
-    
-    private func show(quiz step: QuizStepViewModel) {
-        imageView.image = step.image
-        questionText.text = step.question
-        indexLabel.text = step.questionNumber
-    }
-    
-    private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questions.count - 1 {
-            let text = "Ваш результат: \(correctAnswers)/10"
-            let viewModel = QuizResultsViewModel(
-                title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
-        } else {
-            currentQuestionIndex += 1
-            let nextQuestion = questions[currentQuestionIndex]
-            let viewModel = convert(model: nextQuestion)
-            
-            show(quiz: viewModel)
-        }
-    }
-    
-    private func showAnswerResult(isCorrect: Bool) {
-        if isCorrect{
-            correctAnswers += 1
-        }
-        
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.showNextQuestionOrResults()
-        }
-    }
-    
-   
-    private func show(quiz result: QuizResultsViewModel) {
-        let alert = UIAlertController(
-            title: result.title,
-            message: result.text,
-            preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            
-            let firstQuestion = self.questions[self.currentQuestionIndex]
-            let viewModel = self.convert(model: firstQuestion)
-            self.imageView.layer.borderColor = .none
-            self.show(quiz: viewModel)
-        }
-        
-        alert.addAction(action)
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    
-    //MARK: - UI Objects
-    private lazy var imageView = {
-        let image = UIImageView()
-        image.backgroundColor = .ypWhite
-        image.layer.cornerRadius = 20
-        image.clipsToBounds = true
-        image.translatesAutoresizingMaskIntoConstraints = false
-        
-        return image
-    }()
-    
-    
-    private func createLabel(text: String, font: String, size: Int) -> UILabel {
-        {
-            let label = UILabel()
-            label.text = text
-            label.numberOfLines = 0
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.font = UIFont(name: font, size: CGFloat(size))
-            label.textColor = .ypWhite
-            label.textAlignment = .center
-            
-            return label
-        }()
-    }
-    
-    private func createButton(title: String, action: UIAction) -> UIButton{
-        {
-            let button = UIButton(primaryAction: action)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.setTitle(title, for: .normal)
-            button.setTitleColor(.ypBlack, for: .normal)
-            button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
-            button.layer.cornerRadius = 15
-            button.backgroundColor = .ypWhite
-            return button
-        }()
-    }
-    
-    private lazy var noAction = UIAction { _ in
-        let currentQuestion = self.questions[self.currentQuestionIndex]
-        let givenAnswer = false
-        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-        
-    }
-    
-    private lazy var yesAction = UIAction { _ in
-        let currentQuestion = self.questions[self.currentQuestionIndex]
-        let givenAnswer = true
-        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-        
-    }
-    
-    private lazy var yesButton = createButton(title: "Да", action: yesAction)
-    private lazy var noButton = createButton(title: "Нет", action: noAction)
-    private lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23)
-    private lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20)
-    private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20)
-    
-    
-    
-    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -231,17 +97,17 @@ final class MovieQuizViewController: UIViewController {
         
         show(quiz: convert(model: currentQuestion))
         
-        view.addSubview(questionTitleLabel)
-        view.addSubview(noButton)
-        view.addSubview(yesButton)
-        view.addSubview(indexLabel)
-        view.addSubview(imageView)
-        view.addSubview(questionText)
+        [questionTitleLabel,
+         noButton,
+         yesButton,
+         indexLabel,
+         imageView,
+         questionText].forEach{
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
         
-        
-        
-    //MARK: Constraints
-        NSLayoutConstraint.activate([
+                NSLayoutConstraint.activate([
             noButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             noButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             noButton.widthAnchor.constraint(equalToConstant: (view.frame.width/2) - 30),
@@ -269,13 +135,122 @@ final class MovieQuizViewController: UIViewController {
             
             questionText.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 62),
             questionText.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -62),
-            questionText.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20),
-            questionText.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -40)
+            questionText.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 33),
+            questionText.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -33)
             
         ])
     }
+    //MARK: UIActions
+    private lazy var noAction = UIAction { _ in
+        let currentQuestion = self.questions[self.currentQuestionIndex]
+        let givenAnswer = false
+        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        
+    }
+
+    private lazy var yesAction = UIAction { _ in
+        let currentQuestion = self.questions[self.currentQuestionIndex]
+        let givenAnswer = true
+        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        
+    }
+
+    //MARK: Private Methods
+    private func createLabel(text: String, font: String, size: Int) -> UILabel {
+        {
+            let label = UILabel()
+            label.text = text
+            label.numberOfLines = 0
+            label.font = UIFont(name: font, size: CGFloat(size))
+            label.textColor = .ypWhite
+            label.textAlignment = .center
+            return label
+        }()
+    }
+
+    private func createButton(title: String, action: UIAction) -> UIButton{
+        {
+            let button = UIButton(primaryAction: action)
+            button.setTitle(title, for: .normal)
+            button.setTitleColor(.ypBlack, for: .normal)
+            button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+            button.layer.cornerRadius = 15
+            button.backgroundColor = .ypWhite
+            return button
+        }()
+    }
+    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+        let questionStep = QuizStepViewModel(
+            image: UIImage(named: model.image) ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
+        return questionStep
+    }
+    
+    private func show(quiz step: QuizStepViewModel) {
+        imageView.image = step.image
+        questionText.text = step.question
+        indexLabel.text = step.questionNumber
+    }
+    
+    private func showNextQuestionOrResults() {
+        if currentQuestionIndex == questions.count - 1 {
+            let text = "Ваш результат: \(correctAnswers)/10"
+            let viewModel = QuizResultsViewModel(
+                title: "Этот раунд окончен!",
+                text: text,
+                buttonText: "Сыграть ещё раз")
+            show(quiz: viewModel)
+        } else {
+            currentQuestionIndex += 1
+            let nextQuestion = questions[currentQuestionIndex]
+            let viewModel = convert(model: nextQuestion)
+            imageView.layer.borderColor = .none
+            noButton.isEnabled = true
+            yesButton.isEnabled = true
+            show(quiz: viewModel)
+        }
+    }
+    
+    private func showAnswerResult(isCorrect: Bool) {
+        if isCorrect{
+            correctAnswers += 1
+        }
+        
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        self.yesButton.isEnabled = false
+        self.noButton.isEnabled = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.showNextQuestionOrResults()
+        }
+    }
+    
+    private func show(quiz result: QuizResultsViewModel) {
+        let alert = UIAlertController(
+            title: result.title,
+            message: result.text,
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            
+            let firstQuestion = self.questions[self.currentQuestionIndex]
+            let viewModel = self.convert(model: firstQuestion)
+            self.imageView.layer.borderColor = .none
+            self.show(quiz: viewModel)
+            self.noButton.isEnabled = true
+            self.yesButton.isEnabled = true
+        }
+        alert.addAction(action)
+        self.present(alert, animated: true, completion: nil)
+    }
+
 }
 
+ 
 //MARK: -Mock Data
 /*
  Картинка: The Godfather
