@@ -140,6 +140,7 @@ final class MovieQuizViewController: UIViewController {
             
         ])
     }
+    
     //MARK: UIActions
     private lazy var noAction = UIAction { _ in
         let currentQuestion = self.questions[self.currentQuestionIndex]
@@ -160,6 +161,7 @@ final class MovieQuizViewController: UIViewController {
         yesButton.isEnabled = isEnabled
         noButton.isEnabled = isEnabled
     }
+    
     private func createLabel(text: String, font: String, size: Int) -> UILabel {
         {
             let label = UILabel()
@@ -219,7 +221,6 @@ final class MovieQuizViewController: UIViewController {
         if isCorrect{
             correctAnswers += 1
         }
-        
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
@@ -250,6 +251,11 @@ final class MovieQuizViewController: UIViewController {
     }
 }
 
+
+#Preview {
+    let vc = MovieQuizViewController()
+    return vc
+}
 
 //MARK: -Mock Data
 /*
