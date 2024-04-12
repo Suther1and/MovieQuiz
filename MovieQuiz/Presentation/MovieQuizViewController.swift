@@ -4,7 +4,6 @@ final class MovieQuizViewController: UIViewController {
     
     
     //MARK: - Private Properties
-    private lazy var currentQuestion = questions[currentQuestionIndex]
     private lazy var currentQuestionIndex = 0
     private lazy var correctAnswers = 0
     private lazy var imageView = {
@@ -32,7 +31,13 @@ final class MovieQuizViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
         
-        show(quiz: convert(model: currentQuestion))
+        if let firstQuestion = questionFactory.requestNextQuestion() {
+            currentQuestion = firstQuestion
+            let viewModel = convert(model: firstQuestion)
+            show(quiz: viewModel)
+        }
+        
+      
         
         [questionTitleLabel,
          noButton,
@@ -80,14 +85,18 @@ final class MovieQuizViewController: UIViewController {
     
     //MARK: UIActions
     private lazy var noAction = UIAction { _ in
-        let currentQuestion = self.questions[self.currentQuestionIndex]
+        guard let currentQuestion = self.currentQuestion else {
+            return
+        }
         let givenAnswer = false
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
     }
     
     private lazy var yesAction = UIAction { _ in
-        let currentQuestion = self.questions[self.currentQuestionIndex]
+        guard let currentQuestion = self.currentQuestion else {
+            return
+        }
         let givenAnswer = true
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
@@ -126,7 +135,7 @@ final class MovieQuizViewController: UIViewController {
         let questionStep = QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
             question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
+            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
         return questionStep
     }
     
@@ -137,20 +146,25 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questions.count - 1 {
-            let text = "Ваш результат: \(correctAnswers)/10"
+        if currentQuestionIndex == questionsAmount - 1 {
+            let text = correctAnswers == questionsAmount ?
+            "Поздравляем, вы ответили на 10 из 10!":
+            "Вы ответили на  \(correctAnswers) из 10, попробуйте еще раз!"
             let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
                 text: text,
                 buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
+            self.show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
-            let nextQuestion = questions[currentQuestionIndex]
-            let viewModel = convert(model: nextQuestion)
-            imageView.layer.borderColor = UIColor.clear.cgColor
-            changeStateButtons(isEnabled: true)
-            show(quiz: viewModel)
+            if let nextQuestion = questionFactory.requestNextQuestion() {
+                currentQuestion = nextQuestion
+                let viewModel = convert(model: nextQuestion)
+                imageView.layer.borderColor = UIColor.clear.cgColor
+                changeStateButtons(isEnabled: true)
+                self.show(quiz: viewModel)
+            }
+
         }
     }
     
@@ -181,11 +195,14 @@ final class MovieQuizViewController: UIViewController {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             
-            let firstQuestion = self.questions[self.currentQuestionIndex]
-            let viewModel = self.convert(model: firstQuestion)
-            self.imageView.layer.borderColor = UIColor.clear.cgColor
-            self.show(quiz: viewModel)
-            self.changeStateButtons(isEnabled: true)
+            if let firstQuestion = self.questionFactory.requestNextQuestion() {
+                self.currentQuestion = firstQuestion
+                let viewModel = self.convert(model: firstQuestion)
+                self.imageView.layer.borderColor = UIColor.clear.cgColor
+                self.show(quiz: viewModel)
+                self.changeStateButtons(isEnabled: true)
+            }
+            
         }
         alert.addAction(action)
         self.present(alert, animated: true, completion: nil)
@@ -193,10 +210,7 @@ final class MovieQuizViewController: UIViewController {
 }
 
 
-#Preview {
-    let vc = MovieQuizViewController()
-    return vc
-}
+
 
 //MARK: -Mock Data
 /*
