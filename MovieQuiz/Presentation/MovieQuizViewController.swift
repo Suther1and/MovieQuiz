@@ -1,6 +1,8 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
+     
+    
     
     
     
@@ -102,6 +104,20 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
+    //MARK: AlertPresenterDelegate
+    
+    func showAlert(with model: AlertModel) {
+        let alert = UIAlertController(title: model.title, message: model.message, preferredStyle: .alert)
+        let action = UIAlertAction(title: model.buttonText, style: .default) { [weak self] _ in
+            guard let self = self else {return}
+            model.completion?()
+            questionFactory.requestNextQuestion()
+
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
     //MARK: UIActions
     private lazy var noAction = UIAction { _ in
         guard let currentQuestion = self.currentQuestion else {
@@ -168,12 +184,20 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         if currentQuestionIndex == questionsAmount - 1 {
             let text = correctAnswers == questionsAmount ?
             "Поздравляем, вы ответили на 10 из 10!":
-            "Вы ответили на  \(correctAnswers) из 10, попробуйте еще раз!"
-            let viewModel = QuizResultsViewModel(
+            "Вы ответили на \(correctAnswers) из \(questionsAmount), попробуйте еще раз!"
+            let alertModel = AlertModel(
                 title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть ещё раз")
-            self.show(quiz: viewModel)
+                message: text,
+                buttonText: "Сыграть еще раз",
+                completion: nil)
+            let alertPresenter = AlertPresenter()
+            alertPresenter.delegate = self
+            alertPresenter.presenterAlert(with: alertModel)
+            
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            self.imageView.layer.borderColor = UIColor.clear.cgColor
+            self.changeStateButtons(isEnabled: true)
         } else {
             currentQuestionIndex += 1
             questionFactory.requestNextQuestion()
@@ -197,27 +221,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    private func show(quiz result: QuizResultsViewModel) {
-        let alert = UIAlertController(
-            title: result.title,
-            message: result.text,
-            preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-            guard let self = self else {return}
-            
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            
-            self.imageView.layer.borderColor = UIColor.clear.cgColor
-            self.changeStateButtons(isEnabled: true)
-            questionFactory.requestNextQuestion()
-            
-            
-        }
-        alert.addAction(action)
-        self.present(alert, animated: true, completion: nil)
-    }
+
 }
 
 
