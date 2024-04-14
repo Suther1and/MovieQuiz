@@ -1,6 +1,8 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+    
+    
     
     
     //MARK: - Private Properties
@@ -20,7 +22,7 @@ final class MovieQuizViewController: UIViewController {
     private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20)
     
     private let questionsAmount: Int = 10
-    private var questionFactory: QuestionFactory = QuestionFactory()
+    private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var currentQuestion: QuizQuestion?
     
    
@@ -30,6 +32,11 @@ final class MovieQuizViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
+        
+        let questionFactory = QuestionFactory()
+        questionFactory.setup(delegate: self)
+        self.questionFactory = questionFactory
+        
         
         if let firstQuestion = questionFactory.requestNextQuestion() {
             currentQuestion = firstQuestion
@@ -81,6 +88,18 @@ final class MovieQuizViewController: UIViewController {
             questionText.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -33)
             
         ])
+    }
+    
+    //MARK: QuestionFactoryDelegate
+    func didRecieveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: viewModel)
+        }
     }
     
     //MARK: UIActions
@@ -157,14 +176,9 @@ final class MovieQuizViewController: UIViewController {
             self.show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
-            if let nextQuestion = questionFactory.requestNextQuestion() {
-                currentQuestion = nextQuestion
-                let viewModel = convert(model: nextQuestion)
-                imageView.layer.borderColor = UIColor.clear.cgColor
-                changeStateButtons(isEnabled: true)
-                self.show(quiz: viewModel)
-            }
-
+            questionFactory.requestNextQuestion()
+            imageView.layer.borderColor = UIColor.clear.cgColor
+            changeStateButtons(isEnabled: true)
         }
     }
     
@@ -195,13 +209,10 @@ final class MovieQuizViewController: UIViewController {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             
-            if let firstQuestion = self.questionFactory.requestNextQuestion() {
-                self.currentQuestion = firstQuestion
-                let viewModel = self.convert(model: firstQuestion)
-                self.imageView.layer.borderColor = UIColor.clear.cgColor
-                self.show(quiz: viewModel)
-                self.changeStateButtons(isEnabled: true)
-            }
+            self.imageView.layer.borderColor = UIColor.clear.cgColor
+            self.changeStateButtons(isEnabled: true)
+            questionFactory.requestNextQuestion()
+            
             
         }
         alert.addAction(action)
