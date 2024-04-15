@@ -113,7 +113,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             model.completion?()
             questionFactory.requestNextQuestion()
             self.imageView.layer.borderColor = UIColor.clear.cgColor
-
         }
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
