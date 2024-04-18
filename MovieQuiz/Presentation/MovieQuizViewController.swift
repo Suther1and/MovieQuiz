@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
      
     
     
@@ -26,8 +26,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var currentQuestion: QuizQuestion?
-    
-   
+    private var statisticService: StatisticServiceProtocol?
+    private var alertPresenter: AlertPresenter?
+
+
      
     
     // MARK: - Lifecycle
@@ -38,7 +40,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         let questionFactory = QuestionFactory()
         questionFactory.setup(delegate: self)
         self.questionFactory = questionFactory
-        
+ 
+        alertPresenter = AlertPresenter(delegate: self)
+        statisticService = StatisticServiceImplementation()
+
         
         if let firstQuestion = questionFactory.requestNextQuestion() {
             currentQuestion = firstQuestion
@@ -104,19 +109,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         }
     }
     
-    //MARK: AlertPresenterDelegate
-    
-    func showAlert(with model: AlertModel) {
-        let alert = UIAlertController(title: model.title, message: model.message, preferredStyle: .alert)
-        let action = UIAlertAction(title: model.buttonText, style: .default) { [weak self] _ in
-            guard let self = self else {return}
-            model.completion?()
-            questionFactory.requestNextQuestion()
-            self.imageView.layer.borderColor = UIColor.clear.cgColor
-        }
-        alert.addAction(action)
-        present(alert, animated: true, completion: nil)
-    }
     
     //MARK: UIActions
     private lazy var noAction = UIAction { _ in
@@ -182,21 +174,23 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            let text = correctAnswers == questionsAmount ?
-            "Поздравляем, вы ответили на 10 из 10!":
-            "Вы ответили на \(correctAnswers) из \(questionsAmount), попробуйте еще раз!"
-            let alertModel = AlertModel(
-                title: "Этот раунд окончен!",
-                message: text,
-                buttonText: "Сыграть еще раз",
-                completion: nil)
-            let alertPresenter = AlertPresenter()
-            alertPresenter.delegate = self
-            alertPresenter.presenterAlert(with: alertModel)
+            statisticService?.store(correct: correctAnswers, total: questionsAmount)
             
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            self.changeStateButtons(isEnabled: true)
+            let text = """
+            Ваш результат: \(correctAnswers)/\(questionsAmount)
+            Количество сыгранных квизов: \(statisticService?.gamesCount ?? 0)
+            Рекорд: \(statisticService?.bestGame.correct ?? 0)/\(statisticService?.bestGame.total ?? 0) (\(statisticService?.bestGame.date.dateTimeString ?? Date().dateTimeString))
+            Средняя точность: \(String(format: "%.2f", statisticService?.totalAccuracy ?? 0))%
+            """
+            let alert = AlertModel(title: "Этот раунд окончен!", message: text, buttonText: "Сыграть еще раз", completion: { [weak self] in
+                guard let self else { return }
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                self.imageView.layer.borderColor = UIColor.clear.cgColor
+                self.changeStateButtons(isEnabled: true)
+                questionFactory.requestNextQuestion()
+            })
+            alertPresenter?.presentAlert(alert: alert)
         } else {
             currentQuestionIndex += 1
             questionFactory.requestNextQuestion()
