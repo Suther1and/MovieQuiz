@@ -2,11 +2,6 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
      
-    
-    
-    
-    
-    
     //MARK: - Private Properties
     private lazy var currentQuestionIndex = 0
     private lazy var correctAnswers = 0
@@ -29,8 +24,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var statisticService: StatisticServiceProtocol?
     private var alertPresenter: AlertPresenter?
 
-
-     
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -44,14 +37,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         alertPresenter = AlertPresenter(delegate: self)
         statisticService = StatisticServiceImplementation()
 
-        
         if let firstQuestion = questionFactory.requestNextQuestion() {
             currentQuestion = firstQuestion
             let viewModel = convert(model: firstQuestion)
             show(quiz: viewModel)
         }
-        
-      
         
         [questionTitleLabel,
          noButton,
@@ -109,7 +99,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    
     //MARK: UIActions
     private lazy var noAction = UIAction { _ in
         guard let currentQuestion = self.currentQuestion else {
@@ -117,7 +106,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
         let givenAnswer = false
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-        
     }
     
     private lazy var yesAction = UIAction { _ in
@@ -126,7 +114,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
         let givenAnswer = true
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-        
     }
     
     //MARK: Private Methods
@@ -158,6 +145,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             return button
         }()
     }
+    
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
@@ -182,7 +170,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             Рекорд: \(statisticService?.bestGame.correct ?? 0)/\(statisticService?.bestGame.total ?? 0) (\(statisticService?.bestGame.date.dateTimeString ?? Date().dateTimeString))
             Средняя точность: \(String(format: "%.2f", statisticService?.totalAccuracy ?? 0))%
             """
-            let alert = AlertModel(title: "Этот раунд окончен!", message: text, buttonText: "Сыграть еще раз", completion: { [weak self] in
+            
+            let alertModel = AlertModel(
+                title: "Этот раунд окончен!",
+                message: text,
+                buttonText: "Сыграть еще раз",
+                completion: { [weak self] in
                 guard let self else { return }
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
@@ -190,7 +183,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 self.changeStateButtons(isEnabled: true)
                 questionFactory.requestNextQuestion()
             })
-            alertPresenter?.presentAlert(alert: alert)
+            alertPresenter?.presentAlert(alert: alertModel)
         } else {
             currentQuestionIndex += 1
             questionFactory.requestNextQuestion()
@@ -213,7 +206,5 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.showNextQuestionOrResults()
         }
     }
-    
-
 }
 
