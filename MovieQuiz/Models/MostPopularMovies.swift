@@ -23,7 +23,7 @@ struct MostPopularMovie: Codable {
         guard let newURL = URL(string: imageURLString) else {
             return imageURL
         }
-        return imageURL
+        return newURL
     }
     
     private enum CodingKeys: String, CodingKey {
