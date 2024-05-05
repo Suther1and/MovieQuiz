@@ -39,12 +39,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionFactory.loadData()
         alertPresenter = AlertPresenter(delegate: self)
         statisticService = StatisticServiceImplementation()
-
-//        if let firstQuestion = questionFactory.requestNextQuestion() {
-//            currentQuestion = firstQuestion
-//            let viewModel = convert(model: firstQuestion)
-//            show(quiz: viewModel)
-//        }
         
         [questionTitleLabel,
          noButton,

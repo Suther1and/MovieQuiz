@@ -45,7 +45,7 @@ class QuestionFactory: QuestionFactoryProtocol {
                 print("Failed to load image")
             }
             let rating = Float(movie.rating) ?? 0
-            let randomRating = Int.random(in: 5...8)
+            let randomRating = Int.random(in: 6...9)
             let text = "Рейтинг этого фильма больше, чем \(randomRating)?"
             let correctAnswer = rating > Float(randomRating)
             let question = QuizQuestion(image: imageData,
@@ -58,19 +58,7 @@ class QuestionFactory: QuestionFactoryProtocol {
         }
     }
 }
-//    func setup(delegate: QuestionFactoryDelegate) {
-//        self.delegate = delegate
-//    }
-//}
-    
-//    func requestNextQuestion() {
-//        guard let index = (0..<questions.count).randomElement() else {
-//            delegate?.didRecieveNextQuestion(question: nil)
-//            return
-//        }
-//        let question = questions[safe: index]
-//        delegate?.didRecieveNextQuestion(question: question)
-//    }
+
 //    private let questions: [QuizQuestion] = [
 //        QuizQuestion(
 //            image: "The Godfather",
@@ -114,10 +102,4 @@ class QuestionFactory: QuestionFactoryProtocol {
 //            correctAnswer: true)
 //    ]
     
-//    func requestNextQuestion() -> QuizQuestion? {
-//        guard let index = (0..<questions.count).randomElement() else {
-//            return nil
-//        }
-//        return questions[safe: index]
-//    }
-//}
+
