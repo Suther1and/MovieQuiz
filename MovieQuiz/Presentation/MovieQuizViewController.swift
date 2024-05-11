@@ -32,10 +32,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
+        activityIndicator.hidesWhenStopped = true
         
         let questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         self.questionFactory = questionFactory
-        showLoadingIndicatior()
+        showLoadingIndicator()
         questionFactory.loadData()
         alertPresenter = AlertPresenter(delegate: self)
         statisticService = StatisticServiceImplementation()
@@ -102,7 +103,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        hideLoadingIndicatior()
+        hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
@@ -128,17 +129,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     //MARK: Private Methods
-    private func showLoadingIndicatior() {
-        activityIndicator.isHidden = false
+    private func showLoadingIndicator() {
         activityIndicator.startAnimating()
     }
     
-    private func hideLoadingIndicatior() {
-        activityIndicator.isHidden = true
+    private func hideLoadingIndicator() {
+        activityIndicator.stopAnimating()
     }
     
     private func showNetworkError(message: String) {
-        hideLoadingIndicatior()
+        hideLoadingIndicator()
         let alertModel = AlertModel(
             title: "Ошибка",
             message: message,
