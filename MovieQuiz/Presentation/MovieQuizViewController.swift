@@ -12,14 +12,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         image.backgroundColor = .ypWhite
         image.layer.cornerRadius = 20
         image.clipsToBounds = true
+        image.accessibilityIdentifier = "Poster"
         return image
     }()
     private lazy var activityIndicator = UIActivityIndicatorView()
-    private lazy var yesButton = createButton(title: "Да", action: yesAction)
-    private lazy var noButton = createButton(title: "Нет", action: noAction)
-    private lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23)
-    private lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20)
-    private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20)
+    private lazy var yesButton = createButton(title: "Да", action: yesAction, id: "Yes")
+    private lazy var noButton = createButton(title: "Нет", action: noAction, id: "No")
+    private lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23, id: "Rating")
+    private lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20, id: "Question")
+    private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20, id: "Index")
     
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
@@ -157,7 +158,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         noButton.isEnabled = isEnabled
     }
     
-    private func createLabel(text: String, font: String, size: Int) -> UILabel {
+    private func createLabel(text: String, font: String, size: Int, id: String) -> UILabel {
         {
             let label = UILabel()
             label.text = text
@@ -165,11 +166,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             label.font = UIFont(name: font, size: CGFloat(size))
             label.textColor = .ypWhite
             label.textAlignment = .center
+            label.accessibilityIdentifier = id
             return label
         }()
     }
     
-    private func createButton(title: String, action: UIAction) -> UIButton{
+    private func createButton(title: String, action: UIAction, id: String) -> UIButton{
         {
             let button = UIButton(primaryAction: action)
             button.setTitle(title, for: .normal)
@@ -177,6 +179,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
             button.layer.cornerRadius = 15
             button.backgroundColor = .ypWhite
+            button.accessibilityIdentifier = id
             return button
         }()
     }
@@ -209,7 +212,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             let alertModel = AlertModel(
                 title: "Этот раунд окончен!",
                 message: text,
-                buttonText: "Сыграть еще раз",
+                buttonText: "Сыграть еще раз", 
                 completion: { [weak self] in
                 guard let self else { return }
                 self.currentQuestionIndex = 0
