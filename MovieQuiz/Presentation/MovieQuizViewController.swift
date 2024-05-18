@@ -5,7 +5,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
      
     //MARK: - Private Properties
-    private lazy var currentQuestionIndex = 0
     private lazy var correctAnswers = 0
     private lazy var imageView = {
         let image = UIImageView()
@@ -22,12 +21,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20, id: "Question")
     private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20, id: "Index")
     
-    private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticServiceProtocol?
     private var alertPresenter: AlertPresenter?
-
+    private let presenter = MovieQuizPresenter()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -97,7 +95,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             return
         }
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
@@ -146,7 +144,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             buttonText: "Попробовать еще раз",
             completion: { [weak self] in
                 guard let self else { return }
-                self.currentQuestionIndex = 0
+                self.presenter.resetQuestionIndex()
                 self.correctAnswers = 0
                 questionFactory?.requestNextQuestion()
             })
@@ -184,14 +182,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }()
     }
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-        return questionStep
-    }
-    
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         questionText.text = step.question
@@ -199,11 +189,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
-            statisticService?.store(correct: correctAnswers, total: questionsAmount)
+        if presenter.isLastQuestion() {
+            statisticService?.store(correct: correctAnswers, total: presenter.questionsAmount)
             
             let text = """
-            Ваш результат: \(correctAnswers)/\(questionsAmount)
+            Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)
             Количество сыгранных квизов: \(statisticService?.gamesCount ?? 0)
             Рекорд: \(statisticService?.bestGame.correct ?? 0)/\(statisticService?.bestGame.total ?? 0) (\(statisticService?.bestGame.date.dateTimeString ?? Date().dateTimeString))
             Средняя точность: \(String(format: "%.2f", statisticService?.totalAccuracy ?? 0))%
@@ -215,7 +205,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 buttonText: "Сыграть еще раз", 
                 completion: { [weak self] in
                 guard let self else { return }
-                self.currentQuestionIndex = 0
+                self.presenter.resetQuestionIndex()
                 self.correctAnswers = 0
                 self.imageView.layer.borderColor = UIColor.clear.cgColor
                 self.changeStateButtons(isEnabled: true)
@@ -223,7 +213,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             })
             alertPresenter?.presentAlert(alert: alertModel)
         } else {
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
             imageView.layer.borderColor = UIColor.clear.cgColor
             changeStateButtons(isEnabled: true)
