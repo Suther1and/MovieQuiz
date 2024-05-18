@@ -22,10 +22,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20, id: "Index")
     
     private var questionFactory: QuestionFactoryProtocol?
-    private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticServiceProtocol?
     private var alertPresenter: AlertPresenter?
     private let presenter = MovieQuizPresenter()
+    private var currentQuestion: QuizQuestion?
+
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -39,6 +40,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionFactory.loadData()
         alertPresenter = AlertPresenter(delegate: self)
         statisticService = StatisticServiceImplementation()
+        presenter.vc = self
         
         [questionTitleLabel,
          noButton,
@@ -111,21 +113,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     //MARK: UIActions
-    private lazy var noAction = UIAction { _ in
-        guard let currentQuestion = self.currentQuestion else {
-            return
-        }
-        let givenAnswer = false
-        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-    }
     
     private lazy var yesAction = UIAction { _ in
-        guard let currentQuestion = self.currentQuestion else {
-            return
-        }
-        let givenAnswer = true
-        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        self.presenter.currentQuestion = self.currentQuestion
+        self.presenter.yesButtonClicked()
     }
+    
+    private lazy var noAction = UIAction { _ in
+        self.presenter.currentQuestion = self.currentQuestion
+        self.presenter.noButtonClicked()
+    }
+    
+     
     
     //MARK: Private Methods
     private func showLoadingIndicator() {
@@ -220,7 +219,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+     func showAnswerResult(isCorrect: Bool) {
         if isCorrect{
             correctAnswers += 1
         }
