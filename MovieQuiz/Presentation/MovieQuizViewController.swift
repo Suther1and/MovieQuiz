@@ -37,7 +37,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         self.questionFactory = questionFactory
         showLoadingIndicator()
         questionFactory.loadData()
-        alertPresenter = AlertPresenter(delegate: self)
         statisticService = StatisticServiceImplementation()
         presenter.vc = self
         
@@ -137,7 +136,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 self.correctAnswers = 0
                 questionFactory?.requestNextQuestion()
             })
-        alertPresenter?.presentAlert(alert: alertModel)
+        alertPresenter?.presentAlert(vc: MovieQuizViewController(), alert: alertModel)
     }
     
     func changeStateButtons(isEnabled: Bool) {

@@ -8,14 +8,18 @@
 import UIKit
 
 final class MovieQuizPresenter {
+    
     let questionsAmount: Int = 10
     private var currentQuestionIndex: Int = 0
     var currentQuestion: QuizQuestion?
     weak var vc: MovieQuizViewController?
-    weak var alertPresenter: AlertPresenter?
-    weak var statisticService: StatisticServiceImplementation?   //Проверить
+    private var statisticService: StatisticServiceProtocol?
     var correctAnswers: Int = 0
     var questionFactory: QuestionFactoryProtocol?
+    
+    init() {
+        self.statisticService = StatisticServiceImplementation()
+    }
     
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
@@ -87,7 +91,8 @@ final class MovieQuizPresenter {
                 vc?.changeStateButtons(isEnabled: true)
                 questionFactory?.requestNextQuestion()
             })
-            alertPresenter?.presentAlert(alert: alertModel)
+            let alertPresenter = AlertPresenter()
+            alertPresenter.presentAlert(vc: vc!, alert: alertModel)
         } else {
             self.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
