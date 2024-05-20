@@ -13,7 +13,6 @@ final class MovieQuizViewController: UIViewController {
         image.accessibilityIdentifier = "Poster"
         return image
     }()
-//    var correctAnswers = 0
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var yesButton = createButton(title: "Да", action: yesAction, id: "Yes")
     private lazy var noButton = createButton(title: "Нет", action: noAction, id: "No")
@@ -31,9 +30,8 @@ final class MovieQuizViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
         activityIndicator.hidesWhenStopped = true
-        
-        
         showLoadingIndicator()
+        
         statisticService = StatisticServiceImplementation()
         presenter.vc = self
         
@@ -86,10 +84,7 @@ final class MovieQuizViewController: UIViewController {
         ])
     }
     
-
-    
-    //MARK: UIActions
-    
+    //MARK: Actions
     private lazy var yesAction = UIAction { _ in
         self.presenter.yesButtonClicked()
     }
@@ -97,8 +92,6 @@ final class MovieQuizViewController: UIViewController {
     private lazy var noAction = UIAction { _ in
         self.presenter.noButtonClicked()
     }
-    
-     
     
     //MARK: Private Methods
     func showLoadingIndicator() {
@@ -127,6 +120,17 @@ final class MovieQuizViewController: UIViewController {
         noButton.isEnabled = isEnabled
     }
     
+    func show(quiz step: QuizStepViewModel) {
+        imageView.image = step.image
+        questionText.text = step.question
+        indexLabel.text = step.questionNumber
+    }
+    
+    private func showNextQuestionOrResults() {
+        presenter.proceedToNextQuestionOrResult()
+    }
+    
+    //MARK: UI Methods
     private func createLabel(text: String, font: String, size: Int, id: String) -> UILabel {
         {
             let label = UILabel()
@@ -153,20 +157,11 @@ final class MovieQuizViewController: UIViewController {
         }()
     }
     
-    func show(quiz step: QuizStepViewModel) {
-        imageView.image = step.image
-        questionText.text = step.question
-        indexLabel.text = step.questionNumber
-    }
-    
-    private func showNextQuestionOrResults() {
-        presenter.showNextQuestionOrResults()
-    }
-    
     func highlightImageBorder(isCorrectAnswer: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
     }
+    
 }
 
