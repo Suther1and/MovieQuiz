@@ -32,9 +32,6 @@ final class MovieQuizViewController: UIViewController {
         view.backgroundColor = .ypBlack
         activityIndicator.hidesWhenStopped = true
         
-        //        let questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-        //        self.questionFactory = questionFactory
-        //        questionFactory.loadData()
         
         showLoadingIndicator()
         statisticService = StatisticServiceImplementation()
@@ -89,18 +86,7 @@ final class MovieQuizViewController: UIViewController {
         ])
     }
     
-//    func didRecieveNextQuestion(question: QuizQuestion?) {
-//        presenter.didRecieveNextQuestion(question: question)
-//    }
-    
-//    func didLoadDataFromServer() {
-//        hideLoadingIndicator()
-//        questionFactory?.requestNextQuestion()
-//    }
-    
-//    func didFailToLoadData(with error: Error) {
-//        showNetworkError(message: error.localizedDescription)
-//    }
+
     
     //MARK: UIActions
     
@@ -177,17 +163,10 @@ final class MovieQuizViewController: UIViewController {
         presenter.showNextQuestionOrResults()
     }
     
-     func showAnswerResult(isCorrect: Bool) {
-        presenter.didAnswer(isCorrect: isCorrect)
+    func highlightImageBorder(isCorrectAnswer: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        changeStateButtons(isEnabled: false)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else {return}
-//            self.presenter.questionFactory = self.questionFactory
-            self.showNextQuestionOrResults()
-        }
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
     }
 }
 
