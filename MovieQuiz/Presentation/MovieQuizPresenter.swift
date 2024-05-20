@@ -12,12 +12,12 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     // MARK: - Private Properties
     let questionsAmount: Int = 10
     private var currentQuestionIndex: Int = 0
+    var correctAnswers: Int = 0
+    var questionFactory: QuestionFactoryProtocol?
     var currentQuestion: QuizQuestion?
     weak var vc: MovieQuizViewController?
     private var statisticService: StatisticServiceProtocol?
-    var correctAnswers: Int = 0
-    var questionFactory: QuestionFactoryProtocol?
-    
+ 
     //MARK: Initializer
     init() {
         self.statisticService = StatisticServiceImplementation()
@@ -78,7 +78,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         didAnswer(isCorrect: isCorrect)
         vc?.changeStateButtons(isEnabled: false)
         vc?.highlightImageBorder(isCorrectAnswer: isCorrect)
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else {return}
             self.proceedToNextQuestionOrResult()

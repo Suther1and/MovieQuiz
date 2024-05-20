@@ -177,13 +177,13 @@
 		6113423A2B701CF8003FC2A4 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				B15F749E2BC956360057D03F /* QuestionFactory.swift */,
-				B15F74A62BC96D730057D03F /* QuestionFactoryProtocol.swift */,
-				B15F74A82BCBF9360057D03F /* QuestionFactoryDelegate.swift */,
-				B15F74E12BD011E00057D03F /* StatisticServiceProtocol.swift */,
 				B15F74F32BD14DE60057D03F /* AlertPresenterProtocol.swift */,
-				B1C4BD802BE65EEA00F618E8 /* NetworkClient.swift */,
 				B1C4BD842BE6635100F618E8 /* MoviesLoader.swift */,
+				B1C4BD802BE65EEA00F618E8 /* NetworkClient.swift */,
+				B15F749E2BC956360057D03F /* QuestionFactory.swift */,
+				B15F74A82BCBF9360057D03F /* QuestionFactoryDelegate.swift */,
+				B15F74A62BC96D730057D03F /* QuestionFactoryProtocol.swift */,
+				B15F74E12BD011E00057D03F /* StatisticServiceProtocol.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -191,9 +191,9 @@
 		8F4738322848DE2A005DF65E /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				AD1ABAB52831907B00B3E448 /* MovieQuizViewController.swift */,
-				B122F4492BF8C04C0031B6A7 /* MovieQuizPresenter.swift */,
 				B15F74B42BCC0E330057D03F /* AlertPresenter.swift */,
+				B122F4492BF8C04C0031B6A7 /* MovieQuizPresenter.swift */,
+				AD1ABAB52831907B00B3E448 /* MovieQuizViewController.swift */,
 				B15F74E52BD013CC0057D03F /* StatisticServiceImplementation.swift */,
 			);
 			path = Presentation;

@@ -2,8 +2,6 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController {
      
-    
-     
     //MARK: - Private Properties
     lazy var imageView = {
         let image = UIImageView()
@@ -13,13 +11,12 @@ final class MovieQuizViewController: UIViewController {
         image.accessibilityIdentifier = "Poster"
         return image
     }()
-    private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var yesButton = createButton(title: "Да", action: yesAction, id: "Yes")
     private lazy var noButton = createButton(title: "Нет", action: noAction, id: "No")
     private lazy var questionText = createLabel(text: "Рейтинг этого фильма больше чем 5?", font: "YSDisplay-Bold", size: 23, id: "Rating")
     private lazy var questionTitleLabel = createLabel(text: "Вопрос:", font: "YSDisplay-Medium", size: 20, id: "Question")
     private lazy var indexLabel = createLabel(text: "1/10", font: "YSDisplay-Medium", size: 20, id: "Index")
-    
+    private lazy var activityIndicator = UIActivityIndicatorView()
     private var statisticService: StatisticServiceProtocol?
     private var alertPresenter: AlertPresenter?
     private let presenter = MovieQuizPresenter()
@@ -46,6 +43,7 @@ final class MovieQuizViewController: UIViewController {
             view.addSubview($0)
         }
         
+        //MARK: Constraints
         NSLayoutConstraint.activate([
             noButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             noButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -79,8 +77,6 @@ final class MovieQuizViewController: UIViewController {
             
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-        
-
         ])
     }
     
@@ -93,7 +89,7 @@ final class MovieQuizViewController: UIViewController {
         self.presenter.noButtonClicked()
     }
     
-    //MARK: Private Methods
+    //MARK: Public Methods
     func showLoadingIndicator() {
         activityIndicator.startAnimating()
     }
@@ -126,12 +122,13 @@ final class MovieQuizViewController: UIViewController {
         indexLabel.text = step.questionNumber
     }
     
+    //MARK: Private Methods
     private func showNextQuestionOrResults() {
         presenter.proceedToNextQuestionOrResult()
     }
     
     //MARK: UI Methods
-    private func createLabel(text: String, font: String, size: Int, id: String) -> UILabel {
+    func createLabel(text: String, font: String, size: Int, id: String) -> UILabel {
         {
             let label = UILabel()
             label.text = text
@@ -144,7 +141,7 @@ final class MovieQuizViewController: UIViewController {
         }()
     }
     
-    private func createButton(title: String, action: UIAction, id: String) -> UIButton{
+    func createButton(title: String, action: UIAction, id: String) -> UIButton{
         {
             let button = UIButton(primaryAction: action)
             button.setTitle(title, for: .normal)
