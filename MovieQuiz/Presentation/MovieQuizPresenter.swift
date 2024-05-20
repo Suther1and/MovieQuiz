@@ -7,7 +7,16 @@
 
 import UIKit
 
-final class MovieQuizPresenter {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
+    
+    
+    init() {
+        
+        self.statisticService = StatisticServiceImplementation()
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+        vc?.showLoadingIndicator()
+    }
     
     let questionsAmount: Int = 10
     private var currentQuestionIndex: Int = 0
@@ -17,9 +26,22 @@ final class MovieQuizPresenter {
     var correctAnswers: Int = 0
     var questionFactory: QuestionFactoryProtocol?
     
-    init() {
-        self.statisticService = StatisticServiceImplementation()
+     
+    
+     
+    //MARK: QuestionFactoryDelegate
+    
+    func didLoadDataFromServer() {
+        vc?.hideLoadingIndicator()
+        questionFactory?.requestNextQuestion()
     }
+    
+    func didFailToLoadData(with error: any Error) {
+        let message = error.localizedDescription
+        vc?.showNetworkError(message: message)
+    }
+    
+    
     
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
@@ -28,6 +50,7 @@ final class MovieQuizPresenter {
     func restartGame() {
         currentQuestionIndex = 0
         correctAnswers = 0
+        questionFactory?.requestNextQuestion()
     }
     
     func switchToNextQuestion() {
@@ -95,7 +118,6 @@ final class MovieQuizPresenter {
                 self.restartGame()
                 vc?.imageView.layer.borderColor = UIColor.clear.cgColor
                 vc?.changeStateButtons(isEnabled: true)
-                questionFactory?.requestNextQuestion()
             })
             let alertPresenter = AlertPresenter()
             alertPresenter.presentAlert(vc: vc!, alert: alertModel)
