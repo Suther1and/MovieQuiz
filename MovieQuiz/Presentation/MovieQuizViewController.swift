@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
      
     //MARK: - Private Properties
     lazy var imageView = {
@@ -108,11 +108,6 @@ final class MovieQuizViewController: UIViewController {
         imageView.image = step.image
         questionText.text = step.question
         indexLabel.text = step.questionNumber
-    }
-    
-    //MARK: Private Methods
-    private func showNextQuestionOrResults() {
-        presenter.proceedToNextQuestionOrResult()
     }
     
     //MARK: UI Methods
