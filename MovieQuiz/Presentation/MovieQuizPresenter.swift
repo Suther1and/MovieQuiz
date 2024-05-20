@@ -10,20 +10,21 @@ import UIKit
 final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     // MARK: - Private Properties
-    let questionsAmount: Int = 10
+    private let questionsAmount: Int = 10
     private var currentQuestionIndex: Int = 0
-    var correctAnswers: Int = 0
-    var questionFactory: QuestionFactoryProtocol?
-    var currentQuestion: QuizQuestion?
-    weak var vc: MovieQuizViewController?
-    private var statisticService: StatisticServiceProtocol?
+    private var correctAnswers: Int = 0
+    private var questionFactory: QuestionFactoryProtocol?
+    private var currentQuestion: QuizQuestion?
+    private weak var viewController: MovieQuizViewControllerProtocol?
+    private let statisticService: StatisticServiceProtocol?
  
     //MARK: Initializer
-    init() {
+    init(viewController: MovieQuizViewControllerProtocol) {
+        self.viewController = viewController
         self.statisticService = StatisticServiceImplementation()
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
-        vc?.showLoadingIndicator()
+        viewController.showLoadingIndicator()
     }
     
     // MARK: Public Methods
@@ -70,32 +71,20 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         currentQuestion = question
         let viewModel = convert(model: question)
         DispatchQueue.main.async { [weak self] in
-            self?.vc?.show(quiz: viewModel)
+            self?.viewController?.show(quiz: viewModel)
         }
     }
     
     func proceedWithAnswer(isCorrect: Bool) {
         didAnswer(isCorrect: isCorrect)
-        vc?.changeStateButtons(isEnabled: false)
-        vc?.highlightImageBorder(isCorrectAnswer: isCorrect)
+        viewController?.changeStateButtons(isEnabled: false)
+        viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else {return}
             self.proceedToNextQuestionOrResult()
         }
     }
-    func showNetworkError(message: String) {
-        vc?.hideLoadingIndicator()
-        let alertModel = AlertModel(
-            title: "Ошибка",
-            message: message,
-            buttonText: "Попробовать еще раз",
-            completion: { [weak self] in
-                guard let self else { return }
-                restartGame()
-            })
-        let alertPresenter = AlertPresenter()
-        alertPresenter.presentAlert(vc: vc!, alert: alertModel)
-    }
+   
     
     // MARK: Private methods
     private func didAnswer(correct: Bool) {
@@ -125,27 +114,27 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
                 completion: { [weak self] in
                     guard let self else { return }
                     self.restartGame()
-                    vc?.imageView.layer.borderColor = UIColor.clear.cgColor
-                    vc?.changeStateButtons(isEnabled: true)
+                    viewController?.clearBorders()
+                    viewController?.changeStateButtons(isEnabled: true)
                 })
             let alertPresenter = AlertPresenter()
-            alertPresenter.presentAlert(vc: vc!, alert: alertModel)
+            alertPresenter.presentAlert(vc: viewController! as! UIViewController, alert: alertModel)
         } else {
             self.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
-            vc?.imageView.layer.borderColor = UIColor.clear.cgColor
-            vc?.changeStateButtons(isEnabled: true)
+            viewController?.clearBorders()
+            viewController?.changeStateButtons(isEnabled: true)
         }
     }
     
     //MARK: QuestionFactoryDelegate
     func didLoadDataFromServer() {
-        vc?.hideLoadingIndicator()
+        viewController?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
     func didFailToLoadData(with error: any Error) {
         let message = error.localizedDescription
-        showNetworkError(message: message)
+        viewController?.showNetworkError(message: message)
     }
 }

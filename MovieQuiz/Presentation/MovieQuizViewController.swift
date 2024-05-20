@@ -19,7 +19,8 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var statisticService: StatisticServiceProtocol?
     private var alertPresenter: AlertPresenter?
-    private let presenter = MovieQuizPresenter()
+    private var presenter: MovieQuizPresenter!
+
 
     
     // MARK: - Lifecycle
@@ -30,7 +31,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         showLoadingIndicator()
         
         statisticService = StatisticServiceImplementation()
-        presenter.vc = self
+        presenter = MovieQuizPresenter(viewController: self)
         
         [questionTitleLabel,
          noButton,
@@ -110,6 +111,19 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         indexLabel.text = step.questionNumber
     }
     
+    func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        let alertModel = AlertModel(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробовать еще раз",
+            completion: { [weak self] in
+                guard let self else { return }
+                presenter.restartGame()
+            })
+        alertPresenter?.presentAlert(vc: MovieQuizViewController(), alert: alertModel)
+    }
+    
     //MARK: UI Methods
     func createLabel(text: String, font: String, size: Int, id: String) -> UILabel {
         {
@@ -141,6 +155,9 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    func clearBorders() {
+        imageView.layer.borderColor = UIColor.clear.cgColor
     }
     
 }
