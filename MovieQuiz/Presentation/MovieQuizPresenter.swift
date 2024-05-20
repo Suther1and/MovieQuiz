@@ -83,6 +83,19 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             self.proceedToNextQuestionOrResult()
         }
     }
+    func showNetworkError(message: String) {
+        vc?.hideLoadingIndicator()
+        let alertModel = AlertModel(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробовать еще раз",
+            completion: { [weak self] in
+                guard let self else { return }
+                restartGame()
+            })
+        let alertPresenter = AlertPresenter()
+        alertPresenter.presentAlert(vc: vc!, alert: alertModel)
+    }
     
     // MARK: Private methods
     private func didAnswer(correct: Bool) {
@@ -133,6 +146,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     func didFailToLoadData(with error: any Error) {
         let message = error.localizedDescription
-        vc?.showNetworkError(message: message)
+        showNetworkError(message: message)
     }
 }

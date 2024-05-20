@@ -98,18 +98,6 @@ final class MovieQuizViewController: UIViewController {
         activityIndicator.stopAnimating()
     }
     
-    func showNetworkError(message: String) {
-        hideLoadingIndicator()
-        let alertModel = AlertModel(
-            title: "Ошибка",
-            message: message,
-            buttonText: "Попробовать еще раз",
-            completion: { [weak self] in
-                guard let self else { return }
-                presenter.restartGame()
-            })
-        alertPresenter?.presentAlert(vc: MovieQuizViewController(), alert: alertModel)
-    }
     
     func changeStateButtons(isEnabled: Bool) {
         yesButton.isEnabled = isEnabled
