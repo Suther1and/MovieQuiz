@@ -5,7 +5,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
      
     //MARK: - Private Properties
-    private lazy var correctAnswers = 0
     lazy var imageView = {
         let image = UIImageView()
         image.backgroundColor = .ypWhite
@@ -14,6 +13,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         image.accessibilityIdentifier = "Poster"
         return image
     }()
+//    var correctAnswers = 0
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var yesButton = createButton(title: "Да", action: yesAction, id: "Yes")
     private lazy var noButton = createButton(title: "Нет", action: noAction, id: "No")
@@ -132,8 +132,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             buttonText: "Попробовать еще раз",
             completion: { [weak self] in
                 guard let self else { return }
-                self.presenter.resetQuestionIndex()
-                self.correctAnswers = 0
+                presenter.restartGame()
                 questionFactory?.requestNextQuestion()
             })
         alertPresenter?.presentAlert(vc: MovieQuizViewController(), alert: alertModel)
@@ -181,16 +180,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
      func showAnswerResult(isCorrect: Bool) {
-        if isCorrect{
-            correctAnswers += 1
-        }
+        presenter.didAnswer(isCorrect: isCorrect)
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         changeStateButtons(isEnabled: false)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else {return}
-            self.presenter.correctAnswers = self.correctAnswers
             self.presenter.questionFactory = self.questionFactory
             self.showNextQuestionOrResults()
         }

@@ -25,8 +25,9 @@ final class MovieQuizPresenter {
         currentQuestionIndex == questionsAmount - 1
     }
     
-    func resetQuestionIndex() {
+    func restartGame() {
         currentQuestionIndex = 0
+        correctAnswers = 0
     }
     
     func switchToNextQuestion() {
@@ -47,6 +48,12 @@ final class MovieQuizPresenter {
     
     func noButtonClicked() {
         didAnswer(correct: false)
+    }
+    
+    func didAnswer(isCorrect: Bool) {
+        if isCorrect{
+            correctAnswers += 1
+        }
     }
     
     private func didAnswer(correct: Bool) {
@@ -85,8 +92,7 @@ final class MovieQuizPresenter {
                 buttonText: "Сыграть еще раз",
                 completion: { [weak self] in
                 guard let self else { return }
-                self.resetQuestionIndex()
-                self.correctAnswers = 0
+                self.restartGame()
                 vc?.imageView.layer.borderColor = UIColor.clear.cgColor
                 vc?.changeStateButtons(isEnabled: true)
                 questionFactory?.requestNextQuestion()
