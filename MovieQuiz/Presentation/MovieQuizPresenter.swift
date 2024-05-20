@@ -12,7 +12,10 @@ final class MovieQuizPresenter {
     private var currentQuestionIndex: Int = 0
     var currentQuestion: QuizQuestion?
     weak var vc: MovieQuizViewController?
-
+    weak var alertPresenter: AlertPresenter?
+    weak var statisticService: StatisticServiceImplementation?   //Проверить
+    var correctAnswers: Int = 0
+    var questionFactory: QuestionFactoryProtocol?
     
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
@@ -35,20 +38,62 @@ final class MovieQuizPresenter {
     }
     
     func yesButtonClicked() {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = true
-        vc?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        didAnswer(correct: true)
     }
     
     func noButtonClicked() {
+        didAnswer(correct: false)
+    }
+    
+    private func didAnswer(correct: Bool) {
         guard let currentQuestion = currentQuestion else {
             return
         }
-        let givenAnswer = false
+        let givenAnswer = correct
         vc?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
+    func didRecieveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.vc?.show(quiz: viewModel)
+        }
+    }
+    
+    func showNextQuestionOrResults() {
+        if self.isLastQuestion() {
+            statisticService?.store(correct: correctAnswers, total: self.questionsAmount)
+            
+            let text = """
+            Ваш результат: \(correctAnswers)/\(questionsAmount)
+            Количество сыгранных квизов: \(statisticService?.gamesCount ?? 0)
+            Рекорд: \(statisticService?.bestGame.correct ?? 0)/\(statisticService?.bestGame.total ?? 0) (\(statisticService?.bestGame.date.dateTimeString ?? Date().dateTimeString))
+            Средняя точность: \(String(format: "%.2f", statisticService?.totalAccuracy ?? 0))%
+            """
+            
+            let alertModel = AlertModel(
+                title: "Этот раунд окончен!",
+                message: text,
+                buttonText: "Сыграть еще раз",
+                completion: { [weak self] in
+                guard let self else { return }
+                self.resetQuestionIndex()
+                self.correctAnswers = 0
+                vc?.imageView.layer.borderColor = UIColor.clear.cgColor
+                vc?.changeStateButtons(isEnabled: true)
+                questionFactory?.requestNextQuestion()
+            })
+            alertPresenter?.presentAlert(alert: alertModel)
+        } else {
+            self.switchToNextQuestion()
+            questionFactory?.requestNextQuestion()
+            vc?.imageView.layer.borderColor = UIColor.clear.cgColor
+            vc?.changeStateButtons(isEnabled: true)
+        }
+    }
     
 }
