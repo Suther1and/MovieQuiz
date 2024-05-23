@@ -5,8 +5,8 @@
 //  Created by Pavel Barto on 18.04.2024.
 //
 
-import Foundation
+import UIKit
 
 protocol AlertPresenterProtocol: AnyObject {
-    func presentAlert(alert: AlertModel)
+    func presentAlert(vc: UIViewController, alert: AlertModel)
 }
